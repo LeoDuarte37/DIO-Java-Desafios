@@ -14,15 +14,6 @@ public class Conta {
         this.saldo = saldo;
     }
 
-    @Override
-    public String toString() {
-        return nome + " {" +
-                "numero=" + numero +
-                ", agencia='" + agencia + '\'' +
-                ", saldo=" + saldo +
-                '}';
-    }
-
     public int getNumero() {
         return numero;
     }
