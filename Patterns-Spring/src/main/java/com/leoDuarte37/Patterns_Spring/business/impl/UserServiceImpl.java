@@ -1,10 +1,8 @@
 package com.leoDuarte37.Patterns_Spring.business.impl;
 
-import com.leoDuarte37.Patterns_Spring.api.mapper.AddressMapper;
-import com.leoDuarte37.Patterns_Spring.api.mapper.UserMapper;
-import com.leoDuarte37.Patterns_Spring.api.request.AddressRequest;
-import com.leoDuarte37.Patterns_Spring.api.request.UpdateUserRequest;
-import com.leoDuarte37.Patterns_Spring.api.request.UserRequest;
+import com.leoDuarte37.Patterns_Spring.api.request.address.AddressRequest;
+import com.leoDuarte37.Patterns_Spring.api.request.user.UpdateAddressFromUserRequest;
+import com.leoDuarte37.Patterns_Spring.api.request.user.UserRequest;
 import com.leoDuarte37.Patterns_Spring.api.response.UserResponse;
 import com.leoDuarte37.Patterns_Spring.business.UserService;
 import com.leoDuarte37.Patterns_Spring.business.ViaCepService;
@@ -37,12 +35,6 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private ViaCepService viaCepService;
 
-    @Autowired
-    private UserMapper userMapper;
-
-    @Autowired
-    private AddressMapper addressMapper;
-
     @Override
     public ResponseEntity<UserResponse> save(UserRequest userRequest) {
         if (contactRepository.existsById(userRequest.contact().getEmail())) {
@@ -54,17 +46,17 @@ public class UserServiceImpl implements UserService {
 
         Address address = verifyAddress(userRequest.cep());
 
-        User user = userMapper.toEntity(userRequest, address);
+        User user = UserRequest.to(userRequest, address);
 
         return ResponseEntity.ok(
-                userMapper.toResponse(userRepository.save(user))
+                UserResponse.Mapper.from(userRepository.save(user))
         );
     }
 
     @Override
     public ResponseEntity<List<UserResponse>> getAll() {
         List<UserResponse> userResponseList = userRepository.findAll().stream()
-                .map(user -> userMapper.toResponse(user))
+                .map(UserResponse.Mapper::from)
                 .toList();
 
         return ResponseEntity.ok(userResponseList);
@@ -78,24 +70,24 @@ public class UserServiceImpl implements UserService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found!");
         }
 
-        UserResponse userResponse = userMapper.toResponse(user.get());
+        UserResponse userResponse = UserResponse.Mapper.from(user.get());
 
         return ResponseEntity.ok(userResponse);
     }
 
     @Override
-    public ResponseEntity<UserResponse> updateAddress(UpdateUserRequest updateUserRequest) {
-        Optional<User> user = userRepository.findByEmail(updateUserRequest.email());
+    public ResponseEntity<UserResponse> updateAddress(UpdateAddressFromUserRequest updateAddressFromUserRequest) {
+        Optional<User> user = userRepository.findByEmail(updateAddressFromUserRequest.email());
 
         if (user.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found!");
         }
 
-        Address newAddress = verifyAddress(updateUserRequest.newCep());
-        User userUpdated = userMapper.toUpdateAddress(user.get(), newAddress);
+        Address newAddress = verifyAddress(updateAddressFromUserRequest.newCep());
+        User userUpdated = UpdateAddressFromUserRequest.to(user.get(), newAddress);
 
         return ResponseEntity.ok(
-                userMapper.toResponse(userRepository.save(userUpdated))
+                UserResponse.Mapper.from(userRepository.save(userUpdated))
         );
     }
 
@@ -112,7 +104,7 @@ public class UserServiceImpl implements UserService {
 
     public Address verifyAddress(String cep) {
         return addressRepository.findById(cep)
-                .orElseGet(() -> addressMapper.toEntity(
+                .orElseGet(() -> AddressRequest.to(
                         viaCepService.checkCep(cep)
                 ));
     }

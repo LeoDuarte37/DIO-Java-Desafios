@@ -1,6 +1,6 @@
 package com.leoDuarte37.Patterns_Spring.business;
 
-import com.leoDuarte37.Patterns_Spring.api.request.AddressRequest;
+import com.leoDuarte37.Patterns_Spring.api.request.address.AddressRequest;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
