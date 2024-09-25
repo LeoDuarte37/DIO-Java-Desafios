@@ -1,7 +1,7 @@
 package com.leoDuarte37.Patterns_Spring.api;
 
-import com.leoDuarte37.Patterns_Spring.api.request.UpdateUserRequest;
-import com.leoDuarte37.Patterns_Spring.api.request.UserRequest;
+import com.leoDuarte37.Patterns_Spring.api.request.user.UpdateUserAddressRequest;
+import com.leoDuarte37.Patterns_Spring.api.request.user.UserRequest;
 import com.leoDuarte37.Patterns_Spring.api.response.UserResponse;
 import com.leoDuarte37.Patterns_Spring.business.UserService;
 import jakarta.validation.Valid;
@@ -16,7 +16,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/user")
-public class UserController {
+public class UserResource {
 
     @Autowired
     private UserService userService;
@@ -43,8 +43,8 @@ public class UserController {
     @PatchMapping
     @Transactional
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public ResponseEntity<UserResponse> updateAddress(@RequestBody @Valid UpdateUserRequest updateUserRequest) {
-        return userService.updateAddress(updateUserRequest);
+    public ResponseEntity<UserResponse> updateAddress(@RequestBody @Valid UpdateUserAddressRequest updateUserAddressRequest) {
+        return userService.updateAddress(updateUserAddressRequest);
     }
 
     @DeleteMapping("/{email}")
